@@ -2,8 +2,8 @@
   "uuid": "desktop-widget@anik",
   "name": "Desktop Widget",
   "description": "A retro-futuristic desktop telemetry terminal with a custom segmented clock, scanlines, and live CPU/RAM meters. Draggable, with configurable opacity and accent color.",
-  "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
-  "url": "",
+  "shell-version": ["50"],
+  "url": "https://github.com/carbonanik/fedora-wall-monitor",
   "settings-schema": "org.gnome.shell.extensions.desktop-widget",
   "gettext-domain": "desktop-widget"
 }

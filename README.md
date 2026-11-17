@@ -8,7 +8,8 @@ accents give it the look of a worn industrial sci-fi display.
 
 ## Requirements
 
-- Fedora with GNOME Shell 45, 46, or 47 (check with `gnome-shell --version`)
+- Fedora with GNOME Shell 50 (tested on GNOME Shell 50.6; check with
+  `gnome-shell --version`)
 - `glib2-devel` for `glib-compile-schemas` (usually already present; if not:
   `sudo dnf install glib2-devel`)
 
@@ -27,8 +28,7 @@ Then reload GNOME Shell:
 Disabling and enabling the extension does **not** reload its JavaScript.
 If you see a small plain-text clock, missing headers, or missing meters
 after an update, the Shell may be running the old code with the new CSS.
-Log out and back in to load the installed design. `bash restart.sh` prints
-the appropriate reload instructions without ending your session.
+Log out and back in to load the installed design.
 
 Verify it's enabled:
 ```bash
