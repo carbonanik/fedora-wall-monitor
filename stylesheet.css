@@ -1,0 +1,55 @@
+.desktop-widget-card {
+    border-radius: 18px;
+    padding: 18px 22px;
+    min-width: 220px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.dw-time {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.dw-date {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 2px;
+    margin-bottom: 14px;
+}
+
+.dw-stats {
+    margin-top: 6px;
+    spacing: 8px;
+}
+
+.dw-stat-row {
+    spacing: 8px;
+}
+
+.dw-stat-name {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    min-width: 34px;
+}
+
+.dw-bar-bg {
+    background-color: rgba(255, 255, 255, 0.10);
+    border-radius: 6px;
+    height: 8px;
+    width: 100px;
+}
+
+.dw-bar-fg {
+    border-radius: 6px;
+    height: 8px;
+    width: 0%;
+}
+
+.dw-stat-pct {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    min-width: 32px;
+    text-align: right;
+}
