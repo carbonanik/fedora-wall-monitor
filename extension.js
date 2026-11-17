@@ -19,15 +19,18 @@ function hexToRgba(hex, alpha) {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function readFileSync(path) {
-    try {
-        const file = Gio.File.new_for_path(path);
-        const [ok, contents] = file.load_contents(null);
-        if (!ok) return null;
-        return new TextDecoder('utf-8').decode(contents);
-    } catch (e) {
-        return null;
-    }
+function readFileAsync(path, cancellable) {
+    const file = Gio.File.new_for_path(path);
+    return new Promise(resolve => {
+        file.load_contents_async(cancellable, (source, result) => {
+            try {
+                const [ok, contents] = source.load_contents_finish(result);
+                resolve(ok ? new TextDecoder('utf-8').decode(contents) : null);
+            } catch (e) {
+                resolve(null);
+            }
+        });
+    });
 }
 
 // ---- the widget actor ------------------------------------------------------
@@ -46,6 +49,8 @@ class DesktopWidget extends St.BoxLayout {
         this._settings = settings;
         this._prevCpu = null;
         this._statsTimeoutId = null;
+        this._statsCancellable = new Gio.Cancellable();
+        this._statsPending = false;
 
         // --- drag state ---
         this._dragging = false;
@@ -205,14 +210,19 @@ class DesktopWidget extends St.BoxLayout {
         this._dateLabel.set_text(now.format('%a  /  %d %b %Y').toUpperCase());
     }
 
-    _updateStats() {
-        this._updateCpu();
-        this._updateRam();
+    async _updateStats() {
+        if (this._statsPending || this._statsCancellable.is_cancelled()) return;
+        this._statsPending = true;
+        try {
+            await Promise.all([this._updateCpu(), this._updateRam()]);
+        } finally {
+            this._statsPending = false;
+        }
     }
 
-    _updateCpu() {
-        const text = readFileSync('/proc/stat');
-        if (!text) return;
+    async _updateCpu() {
+        const text = await readFileAsync('/proc/stat', this._statsCancellable);
+        if (!text || this._statsCancellable.is_cancelled()) return;
         const line = text.split('\n')[0]; // "cpu  1234 0 5678 ..."
         const parts = line.trim().split(/\s+/).slice(1).map(Number);
         const idle = parts[3] + (parts[4] || 0);
@@ -227,9 +237,9 @@ class DesktopWidget extends St.BoxLayout {
         this._prevCpu = { idle, total };
     }
 
-    _updateRam() {
-        const text = readFileSync('/proc/meminfo');
-        if (!text) return;
+    async _updateRam() {
+        const text = await readFileAsync('/proc/meminfo', this._statsCancellable);
+        if (!text || this._statsCancellable.is_cancelled()) return;
         const map = {};
         for (const line of text.split('\n')) {
             const m = line.match(/^(\w+):\s+(\d+)/);
@@ -285,6 +295,7 @@ class DesktopWidget extends St.BoxLayout {
     }
 
     destroy() {
+        this._statsCancellable.cancel();
         if (this._clockTimeoutId) {
             GLib.source_remove(this._clockTimeoutId);
             this._clockTimeoutId = null;
