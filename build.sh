@@ -18,6 +18,7 @@ gnome-extensions enable "$UUID" || true
 
 echo ""
 echo "Done."
+echo "Code changes require a new GNOME Shell process; toggling the extension is not enough."
 echo "On X11: press Alt+F2, type 'r', press Enter to reload GNOME Shell."
 echo "On Wayland: log out and back in (Shell can't hot-reload on Wayland)."
 echo ""

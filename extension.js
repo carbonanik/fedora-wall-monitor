@@ -7,6 +7,7 @@ import Meta from 'gi://Meta';
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { drawClock } from './clock.js';
 
 // ---- helpers -------------------------------------------------------------
 
@@ -44,6 +45,7 @@ class DesktopWidget extends St.BoxLayout {
 
         this._settings = settings;
         this._prevCpu = null;
+        this._statsTimeoutId = null;
 
         // --- drag state ---
         this._dragging = false;
@@ -69,51 +71,99 @@ class DesktopWidget extends St.BoxLayout {
             return GLib.SOURCE_CONTINUE;
         });
 
-        this._statsTimeoutId = null;
-        this._scheduleStatsTimer();
-
         this._updateClock();
         this._updateStats();
     }
 
     _buildUi() {
-        this._timeLabel = new St.Label({ style_class: 'dw-time', text: '--:--' });
+        const header = new St.BoxLayout({ style_class: 'dw-header' });
+        header.add_child(new St.Label({ text: '▰', style_class: 'dw-insignia' }));
+        const identity = new St.BoxLayout({ vertical: true, x_expand: true });
+        identity.add_child(new St.Label({ text: 'WALL MONITOR', style_class: 'dw-heading' }));
+        identity.add_child(new St.Label({ text: 'PERSONAL TELEMETRY TERMINAL', style_class: 'dw-subheading' }));
+        header.add_child(identity);
+        this._statusLabel = new St.Label({ text: '● ONLINE', style_class: 'dw-status', y_align: Clutter.ActorAlign.CENTER });
+        header.add_child(this._statusLabel);
+
+        const clockBox = new St.BoxLayout({ vertical: true, style_class: 'dw-clock' });
+        const clockHeading = new St.BoxLayout({ style_class: 'dw-clock-heading' });
+        clockHeading.add_child(new St.Label({ text: '01 / LOCAL TIME', x_expand: true }));
+        clockHeading.add_child(new St.Label({ text: '[ RTC ]', style_class: 'dw-clock-tag' }));
+        clockBox.add_child(clockHeading);
+
+        const clockRow = new St.BoxLayout({ style_class: 'dw-clock-row' });
+        this._clockDigits = '0000';
+        this._clockFace = new St.DrawingArea({ style_class: 'dw-clock-face' });
+        this._clockFace.connect('repaint', area => {
+            const cr = area.get_context();
+            const [width, height] = area.get_surface_size();
+            drawClock(cr, this._clockDigits, width, height);
+            cr.$dispose();
+        });
+        clockRow.add_child(this._clockFace);
+        const clockDetail = new St.BoxLayout({ vertical: true, style_class: 'dw-clock-detail', y_align: Clutter.ActorAlign.END });
+        this._secondsLabel = new St.Label({ text: '00', style_class: 'dw-seconds' });
+        this._periodLabel = new St.Label({ text: '24H', style_class: 'dw-period' });
+        clockDetail.add_child(new St.Label({ text: 'SEC', style_class: 'dw-detail-label' }));
+        clockDetail.add_child(this._secondsLabel);
+        clockDetail.add_child(this._periodLabel);
+        clockRow.add_child(clockDetail);
+        clockBox.add_child(clockRow);
         this._dateLabel = new St.Label({ style_class: 'dw-date', text: '' });
+        clockBox.add_child(this._dateLabel);
 
         this._statsBox = new St.BoxLayout({ vertical: true, style_class: 'dw-stats' });
-        this._cpuRow = this._buildStatRow('CPU');
-        this._ramRow = this._buildStatRow('RAM');
+        const statsHeading = new St.BoxLayout({ style_class: 'dw-stats-heading' });
+        statsHeading.add_child(new St.Label({ text: '02 / SYSTEM LOAD', x_expand: true }));
+        statsHeading.add_child(new St.Label({ text: '0 ───── 100', style_class: 'dw-scale' }));
+        this._statsBox.add_child(statsHeading);
+        this._cpuRow = this._buildStatRow('A', 'CPU');
+        this._ramRow = this._buildStatRow('B', 'RAM');
         this._statsBox.add_child(this._cpuRow.container);
         this._statsBox.add_child(this._ramRow.container);
 
-        this.add_child(this._timeLabel);
-        this.add_child(this._dateLabel);
+        const footer = new St.BoxLayout({ style_class: 'dw-footer' });
+        footer.add_child(new St.Label({ text: `NODE / ${GLib.get_host_name().toUpperCase().slice(0, 16)}`, x_expand: true }));
+        footer.add_child(new St.Label({ text: ':: DRAG TO RELOCATE' }));
+
+        this._accentRail = new St.Widget({ style_class: 'dw-accent-rail' });
+        this.add_child(this._accentRail);
+        this.add_child(header);
+        this.add_child(clockBox);
         this.add_child(this._statsBox);
+        this.add_child(footer);
     }
 
-    _buildStatRow(label) {
+    _buildStatRow(index, label) {
         const container = new St.BoxLayout({ vertical: false, style_class: 'dw-stat-row' });
-        const nameLabel = new St.Label({ text: label, style_class: 'dw-stat-name' });
+        const indexLabel = new St.Label({ text: index, style_class: 'dw-stat-index', y_align: Clutter.ActorAlign.CENTER });
+        const nameLabel = new St.Label({ text: label, style_class: 'dw-stat-name', y_align: Clutter.ActorAlign.CENTER });
 
-        const barBg = new St.Widget({ style_class: 'dw-bar-bg' });
-        const barFg = new St.Widget({ style_class: 'dw-bar-fg' });
-        barBg.add_child(barFg);
+        const meter = new St.BoxLayout({ style_class: 'dw-meter', y_align: Clutter.ActorAlign.CENTER });
+        const segments = Array.from({ length: 20 }, () => {
+            const segment = new St.Widget({ style_class: 'dw-meter-segment' });
+            meter.add_child(segment);
+            return segment;
+        });
 
-        const pctLabel = new St.Label({ text: '0%', style_class: 'dw-stat-pct' });
+        const pctLabel = new St.Label({ text: '—%', style_class: 'dw-stat-pct', x_expand: true, x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.CENTER });
 
+        container.add_child(indexLabel);
         container.add_child(nameLabel);
-        container.add_child(barBg);
+        container.add_child(meter);
         container.add_child(pctLabel);
 
-        return { container, barBg, barFg, pctLabel };
+        return { container, segments, pctLabel, usage: null };
     }
 
     _applySettings() {
         const opacity = this._settings.get_int('opacity');
         const accent = this._settings.get_string('accent-color');
 
-        this.set_style(`background-color: ${hexToRgba('#101018', opacity / 100)};`);
-        this._timeLabel.set_style(`color: ${accent};`);
+        this.set_style(`background-color: ${hexToRgba('#0c100e', opacity / 100)};`);
+        this._statusLabel.set_style(`color: ${accent};`);
+        this._secondsLabel.set_style(`color: ${accent};`);
+        this._accentRail.set_style(`background-color: ${accent};`);
 
         this._dateLabel.visible = this._settings.get_boolean('show-date');
         this._statsBox.visible = this._settings.get_boolean('show-stats');
@@ -122,9 +172,11 @@ class DesktopWidget extends St.BoxLayout {
         const y = this._settings.get_int('pos-y');
         this.set_position(x, y);
 
-        this._cpuRow.barFg.set_style(`background-color: ${accent};`);
-        this._ramRow.barFg.set_style(`background-color: ${accent};`);
+        for (const row of [this._cpuRow, this._ramRow]) {
+            if (row.usage !== null) this._setBar(row, row.usage);
+        }
 
+        this._updateClock();
         this._scheduleStatsTimer();
     }
 
@@ -143,9 +195,14 @@ class DesktopWidget extends St.BoxLayout {
     _updateClock() {
         const now = GLib.DateTime.new_now_local();
         const use24h = this._settings.get_boolean('use-24h');
-        const timeFmt = use24h ? '%H:%M' : '%I:%M %p';
-        this._timeLabel.set_text(now.format(timeFmt));
-        this._dateLabel.set_text(now.format('%A, %d %B'));
+        const digits = now.format(use24h ? '%H%M' : '%I%M');
+        if (this._clockDigits !== digits) {
+            this._clockDigits = digits;
+            this._clockFace.queue_repaint();
+        }
+        this._secondsLabel.set_text(now.format('%S'));
+        this._periodLabel.set_text(use24h ? '24H' : now.format('%p'));
+        this._dateLabel.set_text(now.format('%a  /  %d %b %Y').toUpperCase());
     }
 
     _updateStats() {
@@ -187,9 +244,13 @@ class DesktopWidget extends St.BoxLayout {
 
     _setBar(row, pct) {
         pct = Math.max(0, Math.min(100, pct));
+        row.usage = pct;
         row.pctLabel.set_text(`${pct}%`);
         const accent = this._settings.get_string('accent-color');
-        row.barFg.set_style(`background-color: ${accent}; width: ${pct}%;`);
+        const activeSegments = Math.round(pct / 100 * row.segments.length);
+        row.segments.forEach((segment, index) => {
+            segment.set_style(index < activeSegments ? `background-color: ${accent};` : null);
+        });
     }
 
     // --- dragging ---

@@ -1,8 +1,10 @@
 # Desktop Widget (GNOME Shell Extension)
 
-An Android-style floating widget for your GNOME desktop on Fedora. Shows a
-live clock, date, and CPU/RAM usage bars in a draggable card that sits
-directly on the desktop layer (not in a window).
+A retro-futuristic telemetry terminal for your GNOME desktop on Fedora.
+A custom seven-segment clock, live seconds, date, and segmented CPU/RAM
+meters sit directly on the desktop layer (not in a window). Dark olive
+panels, phosphor-white digits, scanlines, registration marks, and burnt-orange
+accents give it the look of a worn industrial sci-fi display.
 
 ## Requirements
 
@@ -21,6 +23,12 @@ Then reload GNOME Shell:
 - **X11**: `Alt+F2`, type `r`, hit Enter
 - **Wayland**: log out and back in (required — Wayland sessions can't
   hot-reload the shell)
+
+Disabling and enabling the extension does **not** reload its JavaScript.
+If you see a small plain-text clock, missing headers, or missing meters
+after an update, the Shell may be running the old code with the new CSS.
+Log out and back in to load the installed design. `bash restart.sh` prints
+the appropriate reload instructions without ending your session.
 
 Verify it's enabled:
 ```bash
@@ -43,12 +51,16 @@ Settings available:
 | Setting | What it does |
 |---|---|
 | Opacity | Background transparency of the card |
-| Accent color | Clock text + stat bar color |
+| Accent color | Live indicator + usage meter color |
 | Show date | Toggle the date line |
 | 24-hour clock | 24h vs 12h AM/PM |
 | Show CPU/RAM | Toggle the stats section |
 | Refresh interval | How often stats update (seconds) |
 | X / Y position | Manual position (or just drag it) |
+
+The default accent is muted orange (`#d76b4e`) with 94% background opacity.
+Existing saved preferences are preserved; choose these values in Settings
+to apply the new palette to an existing installation.
 
 ## Uninstall
 
@@ -62,6 +74,9 @@ rm -rf ~/.local/share/gnome-shell/extensions/desktop-widget@anik
 ```
 desktop-widget@anik/
 ├── extension.js      # widget logic: clock, stats polling, drag handling
+├── clock.js          # Cairo-rendered segmented clock with scanlines
+├── assets/
+│   └── terminal-face.svg # display grid, scanlines, registration marks
 ├── prefs.js           # Adwaita settings UI
 ├── metadata.json      # extension metadata (uuid, supported shell versions)
 ├── stylesheet.css      # card + bar styling

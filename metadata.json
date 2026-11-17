@@ -1,7 +1,7 @@
 {
   "uuid": "desktop-widget@anik",
   "name": "Desktop Widget",
-  "description": "An Android-style floating desktop widget for GNOME Shell showing clock, date, and live CPU/RAM stats. Draggable, resizable opacity, and configurable via a settings panel.",
+  "description": "A retro-futuristic desktop telemetry terminal with a custom segmented clock, scanlines, and live CPU/RAM meters. Draggable, with configurable opacity and accent color.",
   "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
   "url": "",
   "settings-schema": "org.gnome.shell.extensions.desktop-widget",

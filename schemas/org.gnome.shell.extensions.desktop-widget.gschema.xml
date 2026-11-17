@@ -15,7 +15,7 @@
     </key>
 
     <key name="opacity" type="i">
-      <default>85</default>
+      <default>94</default>
       <summary>Widget opacity</summary>
       <description>Background opacity of the widget card, from 0 (transparent) to 100 (solid).</description>
     </key>
@@ -45,9 +45,9 @@
     </key>
 
     <key name="accent-color" type="s">
-      <default>"#7c3aed"</default>
+      <default>"#d76b4e"</default>
       <summary>Accent color</summary>
-      <description>Hex color used for the clock text and accent bar.</description>
+      <description>Hex color used for the live indicator and segmented usage meters.</description>
     </key>
 
   </schema>

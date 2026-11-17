@@ -1,55 +1,168 @@
+/* Native St styling. The vector face adds scanlines and registration marks. */
 .desktop-widget-card {
-    border-radius: 18px;
-    padding: 18px 22px;
-    min-width: 220px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    width: 380px;
+    background-color: #0c100e;
+    border: 1px solid #434b3e;
+    border-radius: 2px;
+    color: #dce0cd;
+    font-family: "JetBrains Mono", "DejaVu Sans Mono", monospace;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
-.dw-time {
-    font-size: 34px;
-    font-weight: 700;
+.dw-accent-rail {
+    height: 3px;
+    width: 66px;
+    background-color: #d76b4e;
+}
+
+.dw-header {
+    padding: 15px 18px 17px;
+    spacing: 11px;
+    border-bottom: 1px solid #333d31;
+}
+
+.dw-insignia {
+    font-size: 25px;
+    color: #dce0cd;
+    padding-top: 1px;
+}
+
+.dw-heading {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #dce0cd;
+}
+
+.dw-subheading {
+    margin-top: 4px;
+    font-size: 7px;
     letter-spacing: 1px;
+    color: #89947f;
+}
+
+.dw-status {
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: #d76b4e;
+}
+
+.dw-clock {
+    background-image: url("assets/terminal-face.svg");
+    padding: 19px 22px 23px;
+    spacing: 19px;
+}
+
+.dw-clock-heading {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: #98a38b;
+}
+
+.dw-clock-tag {
+    color: #c0c5af;
+}
+
+.dw-clock-row {
+    spacing: 12px;
+}
+
+.dw-clock-face {
+    width: 272px;
+    height: 100px;
+}
+
+.dw-clock-detail {
+    border-left: 1px solid #3d4737;
+    padding-left: 10px;
+    spacing: 4px;
+    margin-bottom: 4px;
+}
+
+.dw-detail-label {
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: #89947f;
+}
+
+.dw-seconds {
+    font-size: 22px;
+    font-weight: 700;
+    color: #d76b4e;
+}
+
+.dw-period {
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: #c0c5af;
 }
 
 .dw-date {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.65);
-    margin-top: 2px;
-    margin-bottom: 14px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #b4bca5;
 }
 
 .dw-stats {
-    margin-top: 6px;
-    spacing: 8px;
+    border-top: 1px solid #3d4737;
+    padding: 17px 22px 20px;
+    spacing: 13px;
+}
+
+.dw-stats-heading {
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: #98a38b;
+    margin-bottom: 4px;
+}
+
+.dw-scale {
+    color: #89947f;
+    letter-spacing: 0;
 }
 
 .dw-stat-row {
-    spacing: 8px;
+    spacing: 12px;
+}
+
+.dw-stat-index {
+    font-size: 8px;
+    color: #98a38b;
+    border: 1px solid #424d3b;
+    padding: 2px 4px;
 }
 
 .dw-stat-name {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.55);
-    min-width: 34px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    min-width: 30px;
+    color: #c0c5af;
 }
 
-.dw-bar-bg {
-    background-color: rgba(255, 255, 255, 0.10);
-    border-radius: 6px;
-    height: 8px;
-    width: 100px;
+.dw-meter {
+    spacing: 3px;
 }
 
-.dw-bar-fg {
-    border-radius: 6px;
-    height: 8px;
-    width: 0%;
+.dw-meter-segment {
+    width: 5px;
+    height: 16px;
+    background-color: #273023;
 }
 
 .dw-stat-pct {
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.65);
-    min-width: 32px;
-    text-align: right;
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 38px;
+    color: #dce0cd;
+}
+
+.dw-footer {
+    background-color: rgba(130, 148, 110, 0.05);
+    border-top: 1px solid #333d31;
+    padding: 12px 18px;
+    spacing: 12px;
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: #98a38b;
 }

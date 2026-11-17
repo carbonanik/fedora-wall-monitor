@@ -24,7 +24,7 @@ export default class DesktopWidgetPreferences extends ExtensionPreferences {
         ));
 
         appearanceGroup.add(this._colorRow(
-            'Accent color', 'Used for the clock text and stat bars', settings
+            'Accent color', 'Used for the live indicator and usage meters', settings
         ));
 
         appearanceGroup.add(this._switchRow(
