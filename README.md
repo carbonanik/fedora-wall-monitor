@@ -1,4 +1,4 @@
-# Desktop Widget (GNOME Shell Extension)
+# Wall Monitor (GNOME Shell Extension)
 
 A retro-futuristic telemetry terminal for your GNOME desktop on Fedora.
 A custom seven-segment clock, live seconds, date, and segmented CPU/RAM
