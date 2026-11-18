@@ -108,7 +108,7 @@ class DesktopWidget extends St.BoxLayout {
         clockRow.add_child(this._clockFace);
         const clockDetail = new St.BoxLayout({ vertical: true, style_class: 'dw-clock-detail', y_align: Clutter.ActorAlign.END });
         this._secondsLabel = new St.Label({ text: '00', style_class: 'dw-seconds' });
-        this._periodLabel = new St.Label({ text: '24H', style_class: 'dw-period' });
+        this._periodLabel = new St.Label({ text: '', style_class: 'dw-period' });
         clockDetail.add_child(new St.Label({ text: 'SEC', style_class: 'dw-detail-label' }));
         clockDetail.add_child(this._secondsLabel);
         clockDetail.add_child(this._periodLabel);
@@ -206,7 +206,7 @@ class DesktopWidget extends St.BoxLayout {
             this._clockFace.queue_repaint();
         }
         this._secondsLabel.set_text(now.format('%S'));
-        this._periodLabel.set_text(use24h ? '24H' : now.format('%p'));
+        this._periodLabel.set_text(use24h ? '24H' : (now.get_hour() < 12 ? 'AM' : 'PM'));
         this._dateLabel.set_text(now.format('%a  /  %d %b %Y').toUpperCase());
     }
 

@@ -53,7 +53,7 @@ Settings available:
 | Opacity | Background transparency of the card |
 | Accent color | Live indicator + usage meter color |
 | Show date | Toggle the date line |
-| 24-hour clock | 24h vs 12h AM/PM |
+| 24-hour clock | 24h vs 12h AM/PM (default) |
 | Show CPU/RAM | Toggle the stats section |
 | Refresh interval | How often stats update (seconds) |
 | X / Y position | Manual position (or just drag it) |
