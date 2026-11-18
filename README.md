@@ -6,6 +6,8 @@ meters sit directly on the desktop layer (not in a window). Dark olive
 panels, phosphor-white digits, scanlines, registration marks, and burnt-orange
 accents give it the look of a worn industrial sci-fi display.
 
+![Wall Monitor preview](assets/preview.png)
+
 ## Requirements
 
 - Fedora with GNOME Shell 50 (tested on GNOME Shell 50.6; check with
